@@ -7,6 +7,7 @@ export default function App() {
     <View style={styles.container}>
       <Text style={{ ...styles.text, color: 'blue' }}>리액트 네이티브</Text>
       <Text style={{ ...styles.text }}>리액트 네이티브</Text>
+      {/* <StatusBar backgroundColor='red' barStyle='dark-content' hidden={true} /> */}
       <StatusBar style="auto" />
     </View>
   );
