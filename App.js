@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Text, ScrollView } from 'react-native';
 
 const App = () => {
 
@@ -8,15 +8,47 @@ const App = () => {
       <View style={styles.cityCon}>
         <Text style={styles.city}>Suwon</Text>
       </View>
-      <View style={styles.weatherCon}>
-        <View style={styles.day}>
-          <Text style={styles.regDate}>12월 29일, 월, 22:32</Text>
-          <Text style={styles.desc}>맑음</Text>
+      <ScrollView horizontal contentContainerStyle={styles.weather}>
+        <View style={styles.weatherInner}>
+          <View style={styles.day}>
+            <Text style={styles.regDate}>12월 29일, 월, 22:32</Text>
+            <Text style={styles.desc}>맑음</Text>
+          </View>
+          <View style={styles.tempCon}>
+            <Text style={styles.temp}>-1</Text>
+          </View>
         </View>
-        <View style={styles.tempCon}>
-          <Text style={styles.temp}>-1</Text>
+
+        <View style={styles.weatherInner}>
+          <View style={styles.day}>
+            <Text style={styles.regDate}>12월 29일, 월, 22:32</Text>
+            <Text style={styles.desc}>맑음</Text>
+          </View>
+          <View style={styles.tempCon}>
+            <Text style={styles.temp}>-1</Text>
+          </View>
         </View>
-      </View>
+
+        <View style={styles.weatherInner}>
+          <View style={styles.day}>
+            <Text style={styles.regDate}>12월 29일, 월, 22:32</Text>
+            <Text style={styles.desc}>맑음</Text>
+          </View>
+          <View style={styles.tempCon}>
+            <Text style={styles.temp}>-1</Text>
+          </View>
+        </View>
+
+        <View style={styles.weatherInner}>
+          <View style={styles.day}>
+            <Text style={styles.regDate}>12월 29일, 월, 22:32</Text>
+            <Text style={styles.desc}>맑음</Text>
+          </View>
+          <View style={styles.tempCon}>
+            <Text style={styles.temp}>-1</Text>
+          </View>
+        </View>
+      </ScrollView>
       <StatusBar style='auto' />
     </View>
   );
@@ -38,7 +70,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: 'bold',
   },
-  weatherCon: {
+  weather: {
+    backgroundColor: 'blue',
+  },
+  weatherInner: {
     flex: 3,
   },
   day: {
