@@ -10,6 +10,7 @@ const App = () => {
 
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
+  const [city, setCity] = useState(null);
 
   const [permitted, setPermitted] = useState(true);
 
@@ -21,7 +22,17 @@ const App = () => {
       setErrorMsg('위치에 대한 권한 부여가 거부되었습니다.');
 
       return;
-    }
+    };
+
+    const { coords: { latitude, longitude } } = await Location.getCurrentPositionAsync({ accuracy: 5 });
+
+    const address = await Location.reverseGeocodeAsync(
+      { latitude, longitude },
+      { useGoogleMaps: false }
+    );
+
+    const cityAddress = address[0].city;
+    setCity(cityAddress);
   }
 
   useEffect(() => {
@@ -31,7 +42,7 @@ const App = () => {
   return (
     <View style={styles.container}>
       <View style={styles.cityCon}>
-        <Text style={styles.city}>Suwon</Text>
+        <Text style={styles.city}>{city}</Text>
       </View>
       <View style={styles.regDateCon}>
         <Text style={styles.regDate}>12월 29일, 월, 22:32</Text>
