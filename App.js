@@ -26,13 +26,26 @@ const App = () => {
 
     const { coords: { latitude, longitude } } = await Location.getCurrentPositionAsync({ accuracy: 5 });
 
-    const address = await Location.reverseGeocodeAsync(
-      { latitude, longitude },
-      { useGoogleMaps: false }
+    const myApiKey = process.env.EXPO_PUBLIC_GOOGLE_GEOLOCATION_API_KEY;
+    const apiUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${myApiKey}`;
+
+    const response = await fetch(apiUrl);
+    const data = await response.json();
+    
+    const state = data.results
+      .flatMap(r => r.address_components)
+      .find(c => c.types.includes('administrative_area_level_1'))
+      ?.long_name;
+
+    const country = data.results
+      .flatMap(r => r.address_components)
+      .find(c => c.types.includes('country'))
+      ?.short_name;
+  
+    setCity(
+      state && country ? `${state}, ${country}` : '알 수 없는 위치'
     );
 
-    const cityAddress = address[0].city;
-    setCity(cityAddress);
   }
 
   useEffect(() => {
