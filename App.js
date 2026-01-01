@@ -1,12 +1,34 @@
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
-import { StyleSheet, View, Text, ScrollView, Dimensions } from 'react-native';
+import { StyleSheet, View, Text, ScrollView, Dimensions, ActivityIndicator } from 'react-native';
 
 import * as Location from 'expo-location';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
 const myApiKey = process.env.EXPO_PUBLIC_GOOGLE_GEOLOCATION_API_KEY;
+
+const weatherCodeMap = {
+  0: '맑음',
+  1: '대체로 맑음',
+  2: '구름 조금',
+  3: '흐림',
+  45: '안개',
+  48: '짙은 안개',
+  51: '이슬비',
+  53: '이슬비',
+  55: '강한 이슬비',
+  61: '비',
+  63: '비',
+  65: '폭우',
+  71: '눈',
+  73: '눈',
+  75: '폭설',
+  80: '소나기',
+  81: '강한 소나기',
+  82: '폭우',
+};
+
 
 const App = () => {
 
@@ -40,10 +62,11 @@ const App = () => {
     const cityAddress = addressComponents.short_name;
     setCity(cityAddress);
 
-    const weatherApiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&timezone=Asia/Seoul`;
+    const weatherApiUrl =`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&daily=temperature_2m_max,temperature_2m_min,weathercode&timezone=Asia/Seoul`;
     const respToWeather = await fetch(weatherApiUrl);
     const jsonForWeather = await respToWeather.json();
     console.log(jsonForWeather);
+    setDailyWeather(jsonForWeather);
   }
 
   useEffect(() => {
@@ -64,42 +87,27 @@ const App = () => {
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.weather}
       >
-        <View style={styles.weatherInner}>
-          <View style={styles.day}>
-            
-            <Text style={styles.desc}>맑음</Text>
+        {!dailyWeather.daily ? (
+          <View style={styles.weatherInner}>
+            <ActivityIndicator size='large' color='#000' />
           </View>
-          <View style={styles.tempCon}>
-            <Text style={styles.temp}>-1</Text>
-          </View>
-        </View>
-
-        <View style={styles.weatherInner}>
-          <View style={styles.day}>
-            <Text style={styles.desc}>맑음</Text>
-          </View>
-          <View style={styles.tempCon}>
-            <Text style={styles.temp}>-1</Text>
-          </View>
-        </View>
-
-        <View style={styles.weatherInner}>
-          <View style={styles.day}>
-            <Text style={styles.desc}>맑음</Text>
-          </View>
-          <View style={styles.tempCon}>
-            <Text style={styles.temp}>-1</Text>
-          </View>
-        </View>
-
-        <View style={styles.weatherInner}>
-          <View style={styles.day}>
-            <Text style={styles.desc}>맑음</Text>
-          </View>
-          <View style={styles.tempCon}>
-            <Text style={styles.temp}>-1</Text>
-          </View>
-        </View>
+        ) : (
+          dailyWeather.daily.time.map((day, index) => (
+            <View key={index} style={styles.weatherInner}>
+              <View style={styles.day}>
+                <Text style={styles.desc}>
+                  {weatherCodeMap[dailyWeather.daily.weathercode[index]]}
+                </Text>
+              </View>
+              <View style={styles.tempCon}>
+                <Text style={styles.temp}>
+                  {Math.round(dailyWeather.daily.temperature_2m_max[index])}
+                </Text>
+                <Text style={{ fontSize: 100, fontWeight: 900, position: 'absolute', top: 65, right: 50 }}>°</Text>
+              </View>
+            </View>
+          ))
+        )} 
       </ScrollView>
       <StatusBar style='auto' />
     </View>
@@ -143,7 +151,7 @@ const styles = StyleSheet.create({
     width: SCREEN_WIDTH,
   },
   day: {
-    flex: 0.2,
+    flex: 0.15,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -154,12 +162,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   tempCon: {
-    flex: 0.3,
+    flex: 0.5,
     alignItems: 'center',
     justifyContent: 'center',
   },
   temp: {
-    fontSize: 120,
+    fontSize: 200,
   }
 });
 
