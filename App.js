@@ -31,20 +31,13 @@ const App = () => {
 
     const response = await fetch(apiUrl);
     const data = await response.json();
-    
-    const state = data.results
-      .flatMap(r => r.address_components)
-      .find(c => c.types.includes('administrative_area_level_1'))
-      ?.long_name;
 
-    const country = data.results
-      .flatMap(r => r.address_components)
-      .find(c => c.types.includes('country'))
-      ?.short_name;
+    const dataRs = data.results[7];
+    const addressComponents = dataRs.address_components[0];
+
+    const cityAddress = addressComponents.short_name;
   
-    setCity(
-      state && country ? `${state}, ${country}` : '알 수 없는 위치'
-    );
+    setCity(cityAddress);
 
   }
 
