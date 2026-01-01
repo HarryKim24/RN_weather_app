@@ -6,13 +6,17 @@ import * as Location from 'expo-location';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
+const myApiKey = process.env.EXPO_PUBLIC_GOOGLE_GEOLOCATION_API_KEY;
+
 const App = () => {
 
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
-  const [city, setCity] = useState(null);
 
   const [permitted, setPermitted] = useState(true);
+
+  const [city, setCity] = useState(null);
+  const [dailyWeather, setDailyWeather] = useState([]);
 
   const locationData = async() => {
     const { granted } = await Location.requestForegroundPermissionsAsync();
@@ -26,7 +30,6 @@ const App = () => {
 
     const { coords: { latitude, longitude } } = await Location.getCurrentPositionAsync({ accuracy: 5 });
 
-    const myApiKey = process.env.EXPO_PUBLIC_GOOGLE_GEOLOCATION_API_KEY;
     const apiUrl = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${myApiKey}`;
 
     const response = await fetch(apiUrl);
@@ -34,11 +37,13 @@ const App = () => {
 
     const dataRs = data.results[7];
     const addressComponents = dataRs.address_components[0];
-
     const cityAddress = addressComponents.short_name;
-  
     setCity(cityAddress);
 
+    const weatherApiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&timezone=Asia/Seoul`;
+    const respToWeather = await fetch(weatherApiUrl);
+    const jsonForWeather = await respToWeather.json();
+    console.log(jsonForWeather);
   }
 
   useEffect(() => {
