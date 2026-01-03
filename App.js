@@ -1,34 +1,14 @@
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, ScrollView, Dimensions, ActivityIndicator } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { weatherDescMap, weatherIconMap } from './WeatherDescKo';
 
 import * as Location from 'expo-location';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
 const myApiKey = process.env.EXPO_PUBLIC_GOOGLE_GEOLOCATION_API_KEY;
-
-const weatherCodeMap = {
-  0: '맑음',
-  1: '대체로 맑음',
-  2: '구름 조금',
-  3: '흐림',
-  45: '안개',
-  48: '짙은 안개',
-  51: '이슬비',
-  53: '이슬비',
-  55: '강한 이슬비',
-  61: '비',
-  63: '비',
-  65: '폭우',
-  71: '눈',
-  73: '눈',
-  75: '폭설',
-  80: '소나기',
-  81: '강한 소나기',
-  82: '폭우',
-};
-
 
 const App = () => {
 
@@ -65,7 +45,6 @@ const App = () => {
     const weatherApiUrl =`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&daily=temperature_2m_max,temperature_2m_min,weathercode&timezone=Asia/Seoul`;
     const respToWeather = await fetch(weatherApiUrl);
     const jsonForWeather = await respToWeather.json();
-    console.log(jsonForWeather);
     setDailyWeather(jsonForWeather);
   }
 
@@ -96,7 +75,13 @@ const App = () => {
             <View key={index} style={styles.weatherInner}>
               <View style={styles.day}>
                 <Text style={styles.desc}>
-                  {weatherCodeMap[dailyWeather.daily.weathercode[index]]}
+                  {weatherDescMap[dailyWeather.daily.weathercode[index]]}
+                  <MaterialCommunityIcons
+                    name={weatherIconMap[dailyWeather.daily.weathercode[index]]}
+                    size={33}
+                    color='#000'
+                    style={{ paddingLeft: 10 }}
+                  />
                 </Text>
               </View>
               <View style={styles.tempCon}>
