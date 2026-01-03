@@ -17,6 +17,7 @@ const myApiKey = process.env.EXPO_PUBLIC_GOOGLE_GEOLOCATION_API_KEY;
 
 const useRegDate = () => {
   const [currentDate, setCurrentDate] = useState(null);
+  const [date, setDate] = useState(null);
 
   useEffect(() => {
     const date = new Date();
@@ -41,9 +42,10 @@ const useRegDate = () => {
     const formattedDate = `${year}, ${month}월 ${date2}일 ${hoursString}:${minutesString}${ampm}, ${dayOfTheWeek[day]}`;
 
     setCurrentDate(formattedDate);
+    setDate(date2);
   }, []);
 
-  return currentDate;
+  return { currentDate, date };
 }
 
 const App = () => {
@@ -51,7 +53,7 @@ const App = () => {
   const [permitted, setPermitted] = useState(true);
   const [city, setCity] = useState(null);
   const [dailyWeather, setDailyWeather] = useState([]);
-  const currentDate = useRegDate();
+  const { currentDate, date } = useRegDate();
 
   const locationData = async () => {
     const { granted } = await Location.requestForegroundPermissionsAsync();
@@ -77,7 +79,6 @@ const App = () => {
     const weatherApiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&daily=temperature_2m_max,temperature_2m_min,weathercode&timezone=Asia/Seoul`;
     const respToWeather = await fetch(weatherApiUrl);
     const jsonForWeather = await respToWeather.json();
-    console.log(jsonForWeather);
     setDailyWeather(jsonForWeather);
   };
 
@@ -136,8 +137,11 @@ const App = () => {
                   <Text style={styles.degree}>°</Text>
                 </View>
 
-                <View style={styles.forcastCon}>
-                  <Text style={styles.forcastTitle}>Week Forcast</Text>
+                <View style={styles.forecastCon}>
+                  <View style={styles.forecastTextBox}>
+                    <Text style={styles.forecastTitle}>Week Forecast</Text>
+                    <Text style={styles.weekDayText}>{date}th</Text>
+                  </View>
                   <View style={styles.infoBox}></View>
                 </View>
               </View>
@@ -204,14 +208,27 @@ const styles = StyleSheet.create({
   temp: {
     fontSize: 200,
   },
-  forcastCon: {
+  forecastCon: {
     flex: 0.6,
     alignItems: 'center',
   },
-  forcastTitle: {
-    fontSize: 30,
-    fontWeight: 'bold',
+  forecastTextBox: {
     width: '80%',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  forecastTitle: {
+    fontSize: 25,
+    fontWeight: 'bold',
+  },
+  weekDayText: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    flex: 1,
+    height: '100%',
+    textAlign: 'right',
+    paddingTop: 10,
+    paddingRight: 10,
   },
   infoBox: {
     flex: 0.6,
