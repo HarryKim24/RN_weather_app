@@ -15,11 +15,43 @@ import * as Location from 'expo-location';
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const myApiKey = process.env.EXPO_PUBLIC_GOOGLE_GEOLOCATION_API_KEY;
 
+const useRegDate = () => {
+  const [currentDate, setCurrentDate] = useState(null);
+
+  useEffect(() => {
+    const date = new Date();
+
+    let year = date.getFullYear();
+    let month = date.getMonth() + 1;
+    let date2 = date.getDate();
+    let day = date.getDay();
+
+    let hours = date.getHours();
+    let minutes = date.getMinutes();
+
+    const ampm = hours > 12 ? 'pm' : 'am';
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+
+    const hoursString = hours < 10 ? `0${hours}` : hours;
+    const minutesString = minutes < 10 ? `0${minutes}` : minutes;
+
+    const dayOfTheWeek = ['일', '월', '화', '수', '목', '금', '토'];
+
+    const formattedDate = `${year}, ${month}월 ${date2}일 ${hoursString}:${minutesString}${ampm}, ${dayOfTheWeek[day]}`;
+
+    setCurrentDate(formattedDate);
+  }, []);
+
+  return currentDate;
+}
+
 const App = () => {
   const [errorMsg, setErrorMsg] = useState(null);
   const [permitted, setPermitted] = useState(true);
   const [city, setCity] = useState(null);
   const [dailyWeather, setDailyWeather] = useState([]);
+  const currentDate = useRegDate();
 
   const locationData = async () => {
     const { granted } = await Location.requestForegroundPermissionsAsync();
@@ -59,7 +91,7 @@ const App = () => {
       </View>
 
       <View style={styles.regDateCon}>
-        <Text style={styles.regDate}>12월 29일, 월, 22:32</Text>
+        <Text style={styles.regDate}>{currentDate}</Text>
       </View>
 
       <ScrollView
