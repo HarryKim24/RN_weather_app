@@ -17,7 +17,6 @@ const myApiKey = process.env.EXPO_PUBLIC_GOOGLE_GEOLOCATION_API_KEY;
 
 const useRegDate = () => {
   const [currentDate, setCurrentDate] = useState(null);
-  const [date, setDate] = useState(null);
 
   useEffect(() => {
     const date = new Date();
@@ -42,10 +41,9 @@ const useRegDate = () => {
     const formattedDate = `${year}, ${month}월 ${date2}일 ${hoursString}:${minutesString}${ampm}, ${dayOfTheWeek[day]}`;
 
     setCurrentDate(formattedDate);
-    setDate(date2);
   }, []);
 
-  return { currentDate, date };
+  return currentDate;
 }
 
 const App = () => {
@@ -53,7 +51,7 @@ const App = () => {
   const [permitted, setPermitted] = useState(true);
   const [city, setCity] = useState(null);
   const [dailyWeather, setDailyWeather] = useState([]);
-  const { currentDate, date } = useRegDate();
+  const currentDate = useRegDate();
 
   const locationData = async () => {
     const { granted } = await Location.requestForegroundPermissionsAsync();
@@ -108,6 +106,9 @@ const App = () => {
           </View>
         ) : (
           dailyWeather.daily.time.map((day, index) => {
+            const dateString = day;
+            const dayOfMonth = Number(dateString.split('-')[2]);
+
             const code = Number(dailyWeather.daily.weathercode[index]);
             const weather = weatherMap[code] ?? {
               desc: '알 수 없음',
@@ -140,7 +141,7 @@ const App = () => {
                 <View style={styles.forecastCon}>
                   <View style={styles.forecastTextBox}>
                     <Text style={styles.forecastTitle}>Week Forecast</Text>
-                    <Text style={styles.weekDayText}>{date}th</Text>
+                    <Text style={styles.weekDayText}>{dayOfMonth}th</Text>
                   </View>
                   <View style={styles.infoBox}></View>
                 </View>
