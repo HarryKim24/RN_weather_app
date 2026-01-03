@@ -77,6 +77,7 @@ const App = () => {
     const weatherApiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&daily=temperature_2m_max,temperature_2m_min,weathercode&timezone=Asia/Seoul`;
     const respToWeather = await fetch(weatherApiUrl);
     const jsonForWeather = await respToWeather.json();
+    console.log(jsonForWeather);
     setDailyWeather(jsonForWeather);
   };
 
@@ -133,6 +134,11 @@ const App = () => {
                     )}
                   </Text>
                   <Text style={styles.degree}>°</Text>
+                </View>
+
+                <View style={styles.forcastCon}>
+                  <Text style={styles.forcastTitle}>Week Forcast</Text>
+                  <View style={styles.infoBox}></View>
                 </View>
               </View>
             );
@@ -197,6 +203,22 @@ const styles = StyleSheet.create({
   },
   temp: {
     fontSize: 200,
+  },
+  forcastCon: {
+    flex: 0.6,
+    alignItems: 'center',
+  },
+  forcastTitle: {
+    fontSize: 30,
+    fontWeight: 'bold',
+    width: '80%',
+  },
+  infoBox: {
+    flex: 0.6,
+    backgroundColor: 'black',
+    width: '80%',
+    borderRadius: 10,
+    marginTop: 10,
   },
   degree: {
     position: 'absolute',
