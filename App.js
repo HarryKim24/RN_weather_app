@@ -8,7 +8,7 @@ import {
   Dimensions,
   ActivityIndicator,
 } from 'react-native';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons, Feather, Ionicons } from '@expo/vector-icons';
 import { weatherMap } from './WeatherDescKo';
 import * as Location from 'expo-location';
 
@@ -20,12 +20,10 @@ const useRegDate = () => {
 
   useEffect(() => {
     const date = new Date();
-
     let year = date.getFullYear();
     let month = date.getMonth() + 1;
     let date2 = date.getDate();
     let day = date.getDay();
-
     let hours = date.getHours();
     let minutes = date.getMinutes();
 
@@ -39,28 +37,20 @@ const useRegDate = () => {
     const dayOfTheWeek = ['일', '월', '화', '수', '목', '금', '토'];
 
     const formattedDate = `${year}, ${month}월 ${date2}일 ${hoursString}:${minutesString}${ampm}, ${dayOfTheWeek[day]}`;
-
     setCurrentDate(formattedDate);
   }, []);
 
   return currentDate;
-}
+};
 
 const App = () => {
-  const [errorMsg, setErrorMsg] = useState(null);
-  const [permitted, setPermitted] = useState(true);
   const [city, setCity] = useState(null);
   const [dailyWeather, setDailyWeather] = useState([]);
   const currentDate = useRegDate();
 
   const locationData = async () => {
     const { granted } = await Location.requestForegroundPermissionsAsync();
-
-    if (!granted) {
-      setPermitted(false);
-      setErrorMsg('위치에 대한 권한 부여가 거부되었습니다.');
-      return;
-    }
+    if (!granted) return;
 
     const {
       coords: { latitude, longitude },
@@ -74,7 +64,8 @@ const App = () => {
       data.results?.[7]?.address_components?.[0]?.short_name;
     setCity(cityAddress);
 
-    const weatherApiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&daily=temperature_2m_max,temperature_2m_min,weathercode&timezone=Asia/Seoul`;
+    const weatherApiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true&hourly=precipitation_probability,visibility,windspeed&daily=temperature_2m_max,temperature_2m_min,weathercode&timezone=Asia/Seoul`;
+
     const respToWeather = await fetch(weatherApiUrl);
     const jsonForWeather = await respToWeather.json();
     setDailyWeather(jsonForWeather);
@@ -106,8 +97,33 @@ const App = () => {
           </View>
         ) : (
           dailyWeather.daily.time.map((day, index) => {
-            const dateString = day;
-            const dayOfMonth = Number(dateString.split('-')[2]);
+            const dayOfMonth = Number(day.split('-')[2]);
+
+            const dayHourlyIndexes = dailyWeather.hourly.time
+              .map((t, i) => (t.startsWith(day) ? i : null))
+              .filter(i => i !== null);
+
+            const dayPrecipitation = dayHourlyIndexes.length
+              ? Math.max(
+                  ...dayHourlyIndexes.map(
+                    i => dailyWeather.hourly.precipitation_probability[i]
+                  )
+                )
+              : null;
+
+            const dayVisibility = dayHourlyIndexes.length
+              ? dayHourlyIndexes.reduce(
+                  (sum, i) => sum + dailyWeather.hourly.visibility[i],
+                  0
+                ) / dayHourlyIndexes.length
+              : null;
+
+            const dayWindSpeed = dayHourlyIndexes.length
+              ? dayHourlyIndexes.reduce(
+                  (sum, i) => sum + dailyWeather.hourly.windspeed[i],
+                  0
+                ) / dayHourlyIndexes.length
+              : null;
 
             const code = Number(dailyWeather.daily.weathercode[index]);
             const weather = weatherMap[code] ?? {
@@ -131,9 +147,7 @@ const App = () => {
 
                 <View style={styles.tempCon}>
                   <Text style={styles.temp}>
-                    {Math.round(
-                      dailyWeather.daily.temperature_2m_max[index]
-                    )}
+                    {Math.round(dailyWeather.daily.temperature_2m_max[index])}
                   </Text>
                   <Text style={styles.degree}>°</Text>
                 </View>
@@ -143,7 +157,38 @@ const App = () => {
                     <Text style={styles.forecastTitle}>Week Forecast</Text>
                     <Text style={styles.weekDayText}>{dayOfMonth}th</Text>
                   </View>
-                  <View style={styles.infoBox}></View>
+
+                  <View style={styles.infoBox}>
+                    <View style={styles.infoInner}>
+                      <Feather name="wind" size={40} color="#fff" />
+                      <Text style={styles.infoValue}>
+                        {dayWindSpeed !== null
+                          ? `${dayWindSpeed.toFixed(0)} km/h`
+                          : '-'}
+                      </Text>
+                      <Text style={styles.infoLabel}>풍속</Text>
+                    </View>
+
+                    <View style={styles.infoInner}>
+                      <Ionicons name="water-outline" size={40} color="#fff" />
+                      <Text style={styles.infoValue}>
+                        {dayPrecipitation !== null
+                          ? `${dayPrecipitation}%`
+                          : '-'}
+                      </Text>
+                      <Text style={styles.infoLabel}>강수확률</Text>
+                    </View>
+
+                    <View style={styles.infoInner}>
+                      <Feather name="eye" size={40} color="#fff" />
+                      <Text style={styles.infoValue}>
+                        {dayVisibility !== null
+                          ? `${(dayVisibility / 1000).toFixed(1)} km`
+                          : '-'}
+                      </Text>
+                      <Text style={styles.infoLabel}>시야</Text>
+                    </View>
+                  </View>
                 </View>
               </View>
             );
@@ -237,6 +282,24 @@ const styles = StyleSheet.create({
     width: '80%',
     borderRadius: 10,
     marginTop: 10,
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  infoInner: {
+    width: '30%',
+    borderColor: 'white',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  infoValue: {
+    fontSize: 20,
+    color: '#fff',
+    paddingTop: 10,
+  },
+  infoLabel: {
+    fontSize: 16,
+    color: '#fff',
+    paddingTop: 10,
   },
   degree: {
     position: 'absolute',
