@@ -1,41 +1,74 @@
-export const weatherDescMap = {
-  0: '맑음',
-  1: '대체로 맑음',
-  2: '구름 조금',
-  3: '흐림',
-  45: '안개',
-  48: '짙은 안개',
-  51: '이슬비',
-  53: '이슬비',
-  55: '강한 이슬비',
-  61: '비',
-  63: '비',
-  65: '폭우',
-  71: '눈',
-  73: '눈',
-  75: '폭설',
-  80: '소나기',
-  81: '강한 소나기',
-  82: '폭우',
-};
-
-export const weatherIconMap = {
-  0: 'weather-sunny',
-  1: 'weather-partly-cloudy',
-  2: 'weather-partly-cloudy',
-  3: 'weather-cloudy',
-  45: 'weather-fog',
-  48: 'weather-fog',
-  51: 'weather-rainy',
-  53: 'weather-rainy',
-  55: 'weather-rainy',
-  61: 'weather-pouring',
-  63: 'weather-pouring',
-  65: 'weather-pouring',
-  71: 'weather-snowy',
-  73: 'weather-snowy',
-  75: 'weather-snowy-heavy',
-  80: 'weather-rainy',
-  81: 'weather-pouring',
-  82: 'weather-pouring',
+export const weatherMap = {
+  0: {
+    desc: '맑음',
+    icon: 'weather-sunny',
+  },
+  1: {
+    desc: '대체로 맑음',
+    icon: 'weather-partly-cloudy',
+  },
+  2: {
+    desc: '구름 조금',
+    icon: 'weather-partly-cloudy',
+  },
+  3: {
+    desc: '흐림',
+    icon: 'weather-cloudy',
+  },
+  45: {
+    desc: '안개',
+    icon: 'weather-fog',
+  },
+  48: {
+    desc: '짙은 안개',
+    icon: 'weather-fog',
+  },
+  51: {
+    desc: '이슬비',
+    icon: 'weather-rainy',
+  },
+  53: {
+    desc: '이슬비',
+    icon: 'weather-rainy',
+  },
+  55: {
+    desc: '강한 이슬비',
+    icon: 'weather-rainy',
+  },
+  61: {
+    desc: '비',
+    icon: 'weather-pouring',
+  },
+  63: {
+    desc: '비',
+    icon: 'weather-pouring',
+  },
+  65: {
+    desc: '폭우',
+    icon: 'weather-pouring',
+  },
+  71: {
+    desc: '눈',
+    icon: 'weather-snowy',
+  },
+  73: {
+    desc: '눈',
+    icon: 'weather-snowy',
+  },
+  75: {
+    desc: '폭설',
+    icon: 'weather-snowy-heavy',
+  },
+  80: {
+    desc: '소나기',
+    icon: 'weather-rainy',
+  },
+  81: {
+    desc: '강한 소나기',
+    icon: 'weather-pouring',
+  },
+  82: {
+    desc: '폭우',
+    icon: 'weather-pouring',
+  },
 };
